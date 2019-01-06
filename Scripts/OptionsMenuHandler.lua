@@ -1,3 +1,7 @@
+--------------------------------------
+--Copyright (c) 2019 TechnologicNick--
+--------------------------------------
+
 --print("OptionsMenuHandler Reloaded!")
 
 function OptionsMenu(scriptedClass, title, rowsPerColumn)
@@ -9,6 +13,7 @@ function OptionsMenu(scriptedClass, title, rowsPerColumn)
     object.items = {}
     object.decreaseButtons = {}
     object.increaseButtons = {}
+    object.dataToImport = nil
     
     function object.setupGui(self)
         self.guiBg = sm.gui.load("ChallengeMessage.layout", true)
@@ -66,6 +71,10 @@ function OptionsMenu(scriptedClass, title, rowsPerColumn)
         return highestRow
     end
     
+    function object.isVisible(self)
+        return self.guiBg ~= nil and self.guiBg.visible
+    end
+    
     function object.show(self)
         self.guiBg.visible = true
     end
@@ -82,6 +91,45 @@ function OptionsMenu(scriptedClass, title, rowsPerColumn)
     
     function object.addOptionsMenuItem(self, id, rowIndex, name, displayName, options, defaultIndex)
         self.items[id] = OptionsMenuItem(self, id, rowIndex, name, displayName, options, defaultIndex)
+    end
+    
+    function object.exportToTable(self)
+        local toReturn = {}
+        
+        for k,v in pairs(self.items) do
+            toReturn[v.name] = {selectedIndex = v.getSelectedIndex(), selectedOption = v.getSelectedOption()}
+        end
+        
+        return toReturn
+    end
+    
+    function object.importFromTable(self, data)
+        for name,itemData in pairs(data) do
+            for id,item in pairs(self.items) do
+                if item.name == name then
+                    item:selectIndex(itemData.selectedIndex)
+                    self.scriptedClass.network:sendToServer("server_onOptionsMenuValueChanged",
+                        {
+                            id = item.id,
+                            selectedIndex = itemData.selectedIndex,
+                            bodyId = self.scriptedClass.shape.body.id,
+                            change = 0
+                        }
+                    )
+                end
+            end
+        end
+    end
+    
+    function object.queueDataToImport(self, data)
+        self.dataToImport = data
+    end
+    
+    function object.importData(self)
+        if self.dataToImport then
+            self:importFromTable(self.dataToImport)
+            self.dataToImport = nil
+        end
     end
     
     return object
@@ -126,11 +174,8 @@ function OptionsMenuItem(optionsMenu, id, rowIndex, name, displayName, options, 
     
     -- OptionsMenuItem Functions
     function object.selectIndex(self, index)
-        --print(type(index))
-        --print("1", index)
         self.selectedIndex = index
         if not sm.isServerMode() then
-            --print("2", sm.isServerMode(), self.selectedIndex)
             self.tbValue:setText(tostring(self.options[self.selectedIndex]))
         end
     end
@@ -141,13 +186,27 @@ function OptionsMenuItem(optionsMenu, id, rowIndex, name, displayName, options, 
             newIndex = #self.options
         end
         self.selectIndex(object, newIndex)
-        self.optionsMenu.scriptedClass.network:sendToServer("server_onOptionsMenuValueChanged", {id = self.id, selectedIndex = newIndex, change = -1})
+        self.optionsMenu.scriptedClass.network:sendToServer("server_onOptionsMenuValueChanged",
+            {
+                id = self.id,
+                selectedIndex = newIndex,
+                bodyId = self.optionsMenu.scriptedClass.shape.body.id,
+                change = -1
+            }
+        )
     end
     
     function object.increase(self)
         local newIndex = self.selectedIndex % #self.options + 1
         self.selectIndex(self, newIndex)
-        self.optionsMenu.scriptedClass.network:sendToServer("server_onOptionsMenuValueChanged", {id = self.id, selectedIndex = newIndex, change = 1})
+        self.optionsMenu.scriptedClass.network:sendToServer("server_onOptionsMenuValueChanged",
+            {
+                id = self.id,
+                selectedIndex = newIndex,
+                bodyId = self.optionsMenu.scriptedClass.shape.body.id,
+                change = 1
+            }
+        )
     end
     
     function object.getSelectedIndex()
@@ -191,17 +250,15 @@ function OptionsMenuItem(optionsMenu, id, rowIndex, name, displayName, options, 
     object.tbValue:setPosition(314+object.widgetItem.buttonWidth, 0)
     object.tbValue:setSize(622-315-object.widgetItem.buttonWidth, object.widgetItem.height)
     
-    object.btnDecrease:bindOnClick("decrease")
-    object.btnIncrease:bindOnClick("increase")
-    
-    --print("decrease =", scriptedClass.decrease)
+    object.btnDecrease:bindOnClick("client_btnDecrease")
+    object.btnIncrease:bindOnClick("client_btnIncrease")
     
     -- ScriptedClass Functions
-    function object.scriptedClass.decrease(self, widget)
+    function object.scriptedClass.client_btnDecrease(self, widget)
         self.optionsMenu.items[self.optionsMenu.decreaseButtons[widget.id]]:decrease()
     end
     
-    function object.scriptedClass.increase(self, widget)
+    function object.scriptedClass.client_btnIncrease(self, widget)
         self.optionsMenu.items[self.optionsMenu.increaseButtons[widget.id]]:increase()
     end
     
