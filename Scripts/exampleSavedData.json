@@ -1,0 +1,33 @@
+{
+	mode = "body",
+	itemData = {
+		property_Usable = {
+			selectedOption = "#{MENU_OPTION_ON}",
+			selectedIndex = 1
+		},
+		property_Destructable = {
+			selectedOption = "#{MENU_OPTION_ON}",
+			selectedIndex = 1
+		},
+		property_Erasable = {
+			selectedOption = "#{MENU_OPTION_ON}",
+			selectedIndex = 1
+		},
+		property_Buildable = {
+			selectedOption = "#{MENU_OPTION_ON}",
+			selectedIndex = 1
+		},
+		property_Paintable = {
+			selectedOption = "#{MENU_OPTION_OFF}",
+			selectedIndex = 2
+		},
+		property_Connectable = {
+			selectedOption = "#{MENU_OPTION_OFF}",
+			selectedIndex = 2
+		},
+		protection_OutOfWorld = {
+			selectedOption = "#{MENU_OPTION_OFF}",
+			selectedIndex = 2
+		}
+	}
+}

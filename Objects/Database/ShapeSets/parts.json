@@ -16,8 +16,8 @@
 							},
 							{
 								"textureList": [
-									"$GAME_DATA/Objects/Textures/interactive/obj_interactive_logicgate_dif.tga",
-									"$GAME_DATA/Objects/Textures/interactive/obj_interactive_logicgate_asg.tga",
+									"$MOD_DATA/Objects/Textures/ScrapGuard_dif.tga",
+									"$MOD_DATA/Objects/Textures/ScrapGuard_asg.tga",
 									"$GAME_DATA/Objects/Textures/interactive/obj_interactive_logicgate_nor.tga"
 								],
 								"material": "UVAnimDifAsgNor",
