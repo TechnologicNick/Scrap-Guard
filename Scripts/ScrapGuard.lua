@@ -23,10 +23,14 @@ ScrapGuard.idErasable             = 5
 ScrapGuard.idUsable               = 6
 ScrapGuard.idLiftable             = 7
 
-
+--if not optionsMenus then
+--    optionsMenus = {}
+--end
 
 function ScrapGuard.client_onCreate( self )
     self.optionsMenu = OptionsMenu(self, "Scrap Guard", 9)
+    self.interactable:setUvFrameIndex(6)
+    --optionsMenus[self.body.id] = {}
 end
 
 function ScrapGuard.client_onSetupGui( self )
@@ -92,7 +96,9 @@ end
 
 function ScrapGuard.server_onOptionsMenuValueChanged( self, data )
     self.optionsMenu.items[data.id]:selectIndex(data.selectedIndex)
-    if data.id == self.idDestructable then
+    if data.id == self.idOutOfWorldProtection then
+        
+    elseif data.id == self.idDestructable then
         self.shape.body.destructable = data.selectedIndex == 1 and true or false
     elseif data.id == self.idBuildable then
         self.shape.body.buildable = data.selectedIndex == 1 and true or false
@@ -142,10 +148,16 @@ function ScrapGuard.server_onFixedUpdate( self, timeStep )
             local position = self.shape:getWorldPosition()
             if position:length2() > 2000000 then
                 --print("Put it on a lift")
+                local position = sm.vec3.new(0, 0, 0)
+                local hit,raycastResult = sm.physics.raycast(sm.vec3.new(0, 0, 1000), sm.vec3.new(0, 0, -10))
+                if hit then
+                    position = raycastResult.pointWorld * 4
+                end
+                print(position)
                 sm.player.placeLift(
                     server_getNearestPlayer(position),
                     self.shape.body:getCreationBodies(),
-                    sm.vec3.new(0, 0, 0),
+                    position,
                     0,
                     0
                 )
