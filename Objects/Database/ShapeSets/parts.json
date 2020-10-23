@@ -42,6 +42,49 @@
 			"box": { "x": 1, "y": 1, "z": 1 },
 			"density": 250.0,
 			"physicsMaterial": "Metal"
+		},
+        {
+			"uuid": "9c9f0d31-f56b-47da-9b47-f727f9ba41e1",
+			"renderable": {
+				"lodList": [
+					{
+						"subMeshList": [
+							{
+								"textureList": [
+									"$GAME_DATA/Objects/Textures/interactive/obj_interactive_logicgate_dif.tga",
+									"$GAME_DATA/Objects/Textures/interactive/obj_interactive_logicgate_asg.tga",
+									"$GAME_DATA/Objects/Textures/interactive/obj_interactive_logicgate_nor.tga"
+								],
+								"material": "PoseAnimDifAsgNor"
+							},
+							{
+								"textureList": [
+									"$MOD_DATA/Objects/Textures/ScrapGuard_dif.tga",
+									"$MOD_DATA/Objects/Textures/ScrapGuard_asg.tga",
+									"$GAME_DATA/Objects/Textures/interactive/obj_interactive_logicgate_nor.tga"
+								],
+								"material": "UVAnimDifAsgNor",
+								"custom":
+								{
+									"uv0": { "u": 0.16666667, "v": 0.1645 }
+								}
+							}
+						],
+						"mesh": "$GAME_DATA/Objects/Mesh/interactive/obj_interactive_logicgate_off.fbx",
+						"pose0": "$GAME_DATA/Objects/Mesh/interactive/obj_interactive_logicgate_on.fbx"
+					}
+				]
+			},
+			"rotationSet": "PropYZ",
+            "scripted" : 
+			{
+				"filename": "$MOD_DATA/Scripts/Airvoid.lua",
+				"classname": "Voids"
+			},
+			"color": "00ffff",
+			"box": { "x": 1, "y": 1, "z": 1 },
+			"density": 250.0,
+			"physicsMaterial": "Metal"
 		}
     ]
 }
