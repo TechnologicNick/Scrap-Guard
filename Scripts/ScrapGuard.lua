@@ -19,5 +19,7 @@ ScrapGuard.colorHighlight = sm.color.new( 0x606060ff )
 function ScrapGuard.client_onInteract( self, character, state )
     if not state then return end
 
-    print("interacted")
+    self.gui = sm.gui.createGuiFromLayout('$MOD_DATA/Gui/Layouts/ScrapGuard.layout')
+
+    self.gui:open()
 end

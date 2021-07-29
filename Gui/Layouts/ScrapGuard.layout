@@ -1,0 +1,149 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<MyGUI type="Layout" version="3.2.0">
+    <Widget type="Widget" skin="PanelEmpty" position_real="0.34375 0.25 0.3125 0.5" name="Main">
+        <Widget type="Widget" skin="BackgroundDarkRoundedUpperRight" position_real="0 0 1 0.222222" name="HeaderPanel">
+            <Widget type="TextBox" skin="TextBox" position_real="0.25 0.0833333 0.5 0.416667" name="Title">
+                <Property key="Caption" value="Scrap Guard"/>
+                <Property key="TextAlign" value="Center"/>
+                <Property key="FontName" value="ButtonCaptionLarge"/>
+            </Widget>
+            <Widget type="Button" skin="InventoryTab" position_real="0.108333 0.666667 0.258333 0.333333" name="Tab1">
+                <Property key="TextAlign" value="Center"/>
+                <Property key="FontName" value="SM_Tab"/>
+                <Property key="Caption" value="Body"/>
+            </Widget>
+            <Widget type="Button" skin="InventoryTab" position_real="0.375 0.666667 0.25 0.333333" name="Tab2">
+                <Property key="FontName" value="SM_Tab"/>
+                <Property key="TextAlign" value="Center"/>
+                <Property key="Caption" value="Creation"/>
+            </Widget>
+            <Widget type="Button" skin="InventoryTab" position_real="0.633333 0.666667 0.258333 0.333333" name="Tab3">
+                <Property key="FontName" value="SM_Tab"/>
+                <Property key="TextAlign" value="Center"/>
+                <Property key="Caption" value="World"/>
+            </Widget>
+        </Widget>
+        <Widget type="Widget" skin="BackgroundLightRoundedLowerLeft" position_real="0 0.222222 1 0.777778" name="OptionsPanel">
+            <Widget type="TextBox" skin="TextBox" position_real="0.2 0.0595238 0.333333 0.0833333" name="Option1">
+                <Property key="FontName" value="SM_TextLabel"/>
+                <Property key="Caption" value="Out of world protection"/>
+                <Property key="TextAlign" value="Left VCenter"/>
+            </Widget>
+            <Widget type="Button" skin="SettingsButton" position_real="0.575 0.047619 0.116667 0.107143" name="On1">
+                <Property key="FontName" value="SM_ButtonSmall"/>
+                <Property key="Caption" value="#{ON_CAPS}"/>
+                <Property key="TextAlign" value="Center"/>
+            </Widget>
+            <Widget type="Button" skin="SettingsButton" position_real="0.691667 0.047619 0.116667 0.107143" name="Off1">
+                <Property key="FontName" value="SM_ButtonSmall"/>
+                <Property key="TextAlign" value="Center"/>
+                <Property key="Caption" value="#{OFF_CAPS}"/>
+            </Widget>
+            <Widget type="TextBox" skin="TextBox" position_real="0.2 0.238095 0.333333 0.0833333" name="Option2">
+                <Property key="FontName" value="SM_TextLabel"/>
+                <Property key="Caption" value="Destructible"/>
+                <Property key="TextAlign" value="Left VCenter"/>
+            </Widget>
+            <Widget type="Button" skin="SettingsButton" position_real="0.575 0.22619 0.116667 0.107143" name="On2">
+                <Property key="FontName" value="SM_ButtonSmall"/>
+                <Property key="Caption" value="#{ON_CAPS}"/>
+                <Property key="TextAlign" value="Center"/>
+            </Widget>
+            <Widget type="Button" skin="SettingsButton" position_real="0.691667 0.22619 0.116667 0.107143" name="Off2">
+                <Property key="FontName" value="SM_ButtonSmall"/>
+                <Property key="TextAlign" value="Center"/>
+                <Property key="Caption" value="#{OFF_CAPS}"/>
+            </Widget>
+            <Widget type="TextBox" skin="TextBox" position_real="0.2 0.333333 0.333333 0.0833333" name="Option3">
+                <Property key="FontName" value="SM_TextLabel"/>
+                <Property key="Caption" value="Buildable"/>
+                <Property key="TextAlign" value="Left VCenter"/>
+            </Widget>
+            <Widget type="Button" skin="SettingsButton" position_real="0.575 0.321429 0.116667 0.107143" name="On3">
+                <Property key="FontName" value="SM_ButtonSmall"/>
+                <Property key="Caption" value="#{ON_CAPS}"/>
+                <Property key="TextAlign" value="Center"/>
+            </Widget>
+            <Widget type="Button" skin="SettingsButton" position_real="0.691667 0.321429 0.116667 0.107143" name="Off3">
+                <Property key="FontName" value="SM_ButtonSmall"/>
+                <Property key="TextAlign" value="Center"/>
+                <Property key="Caption" value="#{OFF_CAPS}"/>
+            </Widget>
+            <Widget type="TextBox" skin="TextBox" position_real="0.2 0.428571 0.333333 0.0833333" name="Option4">
+                <Property key="FontName" value="SM_TextLabel"/>
+                <Property key="Caption" value="Paintable"/>
+                <Property key="TextAlign" value="Left VCenter"/>
+            </Widget>
+            <Widget type="Button" skin="SettingsButton" position_real="0.575 0.416667 0.116667 0.107143" name="On4">
+                <Property key="FontName" value="SM_ButtonSmall"/>
+                <Property key="Caption" value="#{ON_CAPS}"/>
+                <Property key="TextAlign" value="Center"/>
+            </Widget>
+            <Widget type="Button" skin="SettingsButton" position_real="0.691667 0.416667 0.116667 0.107143" name="Off4">
+                <Property key="FontName" value="SM_ButtonSmall"/>
+                <Property key="TextAlign" value="Center"/>
+                <Property key="Caption" value="#{OFF_CAPS}"/>
+            </Widget>
+            <Widget type="TextBox" skin="TextBox" position_real="0.2 0.52381 0.333333 0.0833333" name="Option5">
+                <Property key="FontName" value="SM_TextLabel"/>
+                <Property key="Caption" value="Connectable"/>
+                <Property key="TextAlign" value="Left VCenter"/>
+            </Widget>
+            <Widget type="Button" skin="SettingsButton" position_real="0.575 0.511905 0.116667 0.107143" name="On5">
+                <Property key="FontName" value="SM_ButtonSmall"/>
+                <Property key="Caption" value="#{ON_CAPS}"/>
+                <Property key="TextAlign" value="Center"/>
+            </Widget>
+            <Widget type="Button" skin="SettingsButton" position_real="0.691667 0.511905 0.116667 0.107143" name="Off5">
+                <Property key="FontName" value="SM_ButtonSmall"/>
+                <Property key="TextAlign" value="Center"/>
+                <Property key="Caption" value="#{OFF_CAPS}"/>
+            </Widget>
+            <Widget type="TextBox" skin="TextBox" position_real="0.2 0.619048 0.333333 0.0833333" name="Option6">
+                <Property key="FontName" value="SM_TextLabel"/>
+                <Property key="Caption" value="Erasable"/>
+                <Property key="TextAlign" value="Left VCenter"/>
+            </Widget>
+            <Widget type="Button" skin="SettingsButton" position_real="0.575 0.607143 0.116667 0.107143" name="On6">
+                <Property key="FontName" value="SM_ButtonSmall"/>
+                <Property key="Caption" value="#{ON_CAPS}"/>
+                <Property key="TextAlign" value="Center"/>
+            </Widget>
+            <Widget type="Button" skin="SettingsButton" position_real="0.691667 0.607143 0.116667 0.107143" name="Off6">
+                <Property key="FontName" value="SM_ButtonSmall"/>
+                <Property key="TextAlign" value="Center"/>
+                <Property key="Caption" value="#{OFF_CAPS}"/>
+            </Widget>
+            <Widget type="TextBox" skin="TextBox" position_real="0.2 0.714286 0.333333 0.0833333" name="Option7">
+                <Property key="FontName" value="SM_TextLabel"/>
+                <Property key="Caption" value="Usable"/>
+                <Property key="TextAlign" value="Left VCenter"/>
+            </Widget>
+            <Widget type="Button" skin="SettingsButton" position_real="0.575 0.702381 0.116667 0.107143" name="On7">
+                <Property key="FontName" value="SM_ButtonSmall"/>
+                <Property key="Caption" value="#{ON_CAPS}"/>
+                <Property key="TextAlign" value="Center"/>
+            </Widget>
+            <Widget type="Button" skin="SettingsButton" position_real="0.691667 0.702381 0.116667 0.107143" name="Off7">
+                <Property key="FontName" value="SM_ButtonSmall"/>
+                <Property key="TextAlign" value="Center"/>
+                <Property key="Caption" value="#{OFF_CAPS}"/>
+            </Widget>
+            <Widget type="TextBox" skin="TextBox" position_real="0.2 0.809524 0.333333 0.0833333" name="Option8">
+                <Property key="FontName" value="SM_TextLabel"/>
+                <Property key="Caption" value="Liftable"/>
+                <Property key="TextAlign" value="Left VCenter"/>
+            </Widget>
+            <Widget type="Button" skin="SettingsButton" position_real="0.575 0.797619 0.116667 0.107143" name="On8">
+                <Property key="FontName" value="SM_ButtonSmall"/>
+                <Property key="Caption" value="#{ON_CAPS}"/>
+                <Property key="TextAlign" value="Center"/>
+            </Widget>
+            <Widget type="Button" skin="SettingsButton" position_real="0.691667 0.797619 0.116667 0.107143" name="Off8">
+                <Property key="FontName" value="SM_ButtonSmall"/>
+                <Property key="TextAlign" value="Center"/>
+                <Property key="Caption" value="#{OFF_CAPS}"/>
+            </Widget>
+        </Widget>
+    </Widget>
+</MyGUI>
