@@ -55,6 +55,8 @@ function ScrapGuard.server_onInit( self )
     -- Testing
     RestrictionHandler:setRestriction("game", nil, "game_restriction", true)
     RestrictionHandler:setRestriction("world", self.shape.body, "world_restriction", true)
+    RestrictionHandler:setRestriction("creation", self.shape.body, "creation_restriction", true)
+    RestrictionHandler:setRestriction("body", self.shape.body, "body_restriction", true)
 end
 
 function ScrapGuard.server_onFixedUpdate( self, timeStep )

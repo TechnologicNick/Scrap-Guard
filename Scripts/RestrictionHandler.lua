@@ -7,6 +7,13 @@ RestrictionHandler.restrictions = {
     body = {}
 }
 
+-- RestrictionHandler.hierarchy = {
+--     "game",
+--     "world",
+--     "creation",
+--     "body"
+-- }
+
 function RestrictionHandler:setRestriction( mode, subject, restriction, restricted)
     local restrictionSet
 
@@ -35,9 +42,39 @@ function RestrictionHandler:setRestriction( mode, subject, restriction, restrict
         restrictionSet = self.restrictions.world[worldId]
 
     elseif mode == "creation" then
-        error("Unimplemented mode \"" .. tostring(mode) .. "\"")
+
+        -- Get the creation id
+        local creationId
+
+        if type(subject) == "number" then
+            creationId = subject
+        elseif type(subject) == "Body" then
+            creationId = subject:getCreationId()
+        else
+            error("Unknown subject type \"" .. type(subject) .. "\"")
+        end
+
+        -- Creation restrictions are indexed by creation id
+        self.restrictions.creation[creationId] = self.restrictions.creation[creationId] or {}
+        restrictionSet = self.restrictions.creation[creationId]
+
     elseif mode == "body" then
-        error("Unimplemented mode \"" .. tostring(mode) .. "\"")
+
+        -- Get the body id
+        local bodyId
+
+        if type(subject) == "number" then
+            bodyId = subject
+        elseif type(subject) == "Body" then
+            bodyId = subject.id
+        else
+            error("Unknown subject type \"" .. type(subject) .. "\"")
+        end
+
+        -- Body restrictions are indexed by body id
+        self.restrictions.body[bodyId] = self.restrictions.body[bodyId] or {}
+        restrictionSet = self.restrictions.body[bodyId]
+
     else
         error("Unknown mode \"" .. tostring(mode) .. "\"")
     end
@@ -48,15 +85,17 @@ function RestrictionHandler:setRestriction( mode, subject, restriction, restrict
 end
 
 function RestrictionHandler:getBodyRestrictions( body )
-    local game = self.restrictions.game
-    local world = self.restrictions.world[body:getWorld().id]
-    local creation = self.restrictions.creation[body:getCreationId()] -- The creation id changes for every part added/removed
-    local body = self.restrictions.body[body]
+    local hierarchy = {
+        self.restrictions.game,
+        self.restrictions.world[body:getWorld().id],
+        self.restrictions.creation[body:getCreationId()], -- The creation id changes for every part added/removed
+        self.restrictions.body[body.id],
+    }
 
     local restrictions = {}
 
     -- Merge all restrictions, already assigned values are kept
-    for _, tbl in ipairs({ game, world, creation, body }) do
+    for _, tbl in pairs(hierarchy) do
         for k, v in pairs(tbl or {}) do
             if restrictions[k] == nil then
                 restrictions[k] = v
@@ -64,6 +103,6 @@ function RestrictionHandler:getBodyRestrictions( body )
         end
     end
 
-    print(restrictions)
+    print("restrictions", restrictions)
     return restrictions
 end
