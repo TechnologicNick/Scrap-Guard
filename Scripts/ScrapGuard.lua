@@ -40,7 +40,6 @@ end
 
 
 
--- Testing
 function ScrapGuard.server_onCreate( self )
     self:server_onInit()
 end
@@ -50,6 +49,25 @@ function ScrapGuard.server_onRefresh( self )
 end
 
 function ScrapGuard.server_onInit( self )
+    self.sv_bodyId = self.shape.body.id
+    self.sv_creationId = self.shape.body:getCreationId()
+    
+    -- Testing
     RestrictionHandler:setRestriction("game", nil, "game_restriction", true)
     RestrictionHandler:setRestriction("world", self.shape.body, "world_restriction", true)
+end
+
+function ScrapGuard.server_onFixedUpdate( self, timeStep )
+    local newBodyId = self.shape.body.id
+    local newCreationId = self.shape.body:getCreationId()
+
+    if self.sv_bodyId ~= newBodyId then
+        print("Body id changed from", self.sv_bodyId, "to", newBodyId)
+        self.sv_bodyId = newBodyId
+    end
+
+    if self.sv_creationId ~= newCreationId then
+        print("Creation id changed from", self.sv_creationId, "to", newCreationId)
+        self.sv_creationId = newCreationId
+    end
 end
