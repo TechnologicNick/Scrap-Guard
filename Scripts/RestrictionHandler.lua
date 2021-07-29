@@ -106,3 +106,16 @@ function RestrictionHandler:getBodyRestrictions( body )
     print("restrictions", restrictions)
     return restrictions
 end
+
+function RestrictionHandler:updateRestrictionIndex( mode, indexFrom, indexTo )
+    if mode == "game" then
+        error("Mode \"" .. tostring(mode) .. "\" is not indexed!")
+    elseif mode == "world" or mode == "creation" or mode == "body" then
+
+        local tbl = self.restrictions[mode]
+        tbl[indexTo] = tbl[indexTo] or tbl[indexFrom]
+
+    else
+        error("Unknown mode \"" .. tostring(mode) .. "\"")
+    end
+end
