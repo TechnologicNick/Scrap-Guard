@@ -77,7 +77,6 @@ jobs:
           ]'
           
       - name: Push to Steam Workshop
-        needs:
         env:
           STEAM_USERNAME: ${{ secrets.STEAM_USERNAME }}
           STEAM_PASSWORD: ${{ secrets.STEAM_PASSWORD }}
