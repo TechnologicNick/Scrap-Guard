@@ -58,7 +58,6 @@ function ScrapGuard.server_onInit( self )
     self.sv_bodyId = self.shape.body.id
     self.sv_creationId = self.shape.body:getCreationId()
 
-    local currentTick = sm.game.getCurrentTick()
     idTracker.creation[self.sv_creationId] = true
     idTracker.body[self.sv_bodyId] = true
     
@@ -90,10 +89,20 @@ function ScrapGuard.server_onFixedUpdate( self, timeStep )
         self.sv_creationId = newCreationId
     end
 
-    -- Garbage collect indexes
+    -- Garbage collect indexes every 30 seconds
+    if (sm.game.getCurrentTick() % (30 * 40)) == 0 then
+        self.sv_collectGarbageIndexes()
+    end
+
+    idTracker.creation[newCreationId] = true
+    idTracker.body[newBodyId] = true
+
+end
+
+function ScrapGuard.sv_collectGarbageIndexes( self )
     local currentTick = sm.game.getCurrentTick()
 
-    -- Trigger once on new tick
+    -- Prevent multiple triggers
     if currentTick ~= idTracker.trackedTick then
 
         for _, mode in ipairs({ "creation", "body" }) do
@@ -118,8 +127,4 @@ function ScrapGuard.server_onFixedUpdate( self, timeStep )
             body = {}
         }
     end
-
-    idTracker.creation[newCreationId] = true
-    idTracker.body[newBodyId] = true
-
 end
