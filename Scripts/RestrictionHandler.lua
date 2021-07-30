@@ -114,6 +114,7 @@ function RestrictionHandler:updateRestrictionIndex( mode, indexFrom, indexTo )
 
         local tbl = self.restrictions[mode]
         tbl[indexTo] = tbl[indexTo] or tbl[indexFrom]
+        tbl[indexFrom] = nil
 
     else
         error("Unknown mode \"" .. tostring(mode) .. "\"")
