@@ -59,8 +59,8 @@ function ScrapGuard.server_onInit( self )
     self.sv_creationId = self.shape.body:getCreationId()
 
     local currentTick = sm.game.getCurrentTick()
-    idTracker.creation[self.sv_creationId] = currentTick
-    idTracker.body[self.sv_bodyId] = currentTick
+    idTracker.creation[self.sv_creationId] = true
+    idTracker.body[self.sv_bodyId] = true
     
     -- Testing
     RestrictionHandler:setRestriction("game", nil, "game_restriction", true)
@@ -101,7 +101,7 @@ function ScrapGuard.server_onFixedUpdate( self, timeStep )
             local foundUntracked = false
 
             for index, _ in pairs(RestrictionHandler.restrictions[mode]) do
-                if (idTracker[mode][index] or 0) + 20 <= currentTick then
+                if not idTracker[mode][index] then
                     table.insert(untracked, index)
                     foundUntracked = true
                 end
@@ -119,7 +119,7 @@ function ScrapGuard.server_onFixedUpdate( self, timeStep )
         }
     end
 
-    idTracker.creation[newCreationId] = currentTick
-    idTracker.body[newBodyId] = currentTick
+    idTracker.creation[newCreationId] = true
+    idTracker.body[newBodyId] = true
 
 end
