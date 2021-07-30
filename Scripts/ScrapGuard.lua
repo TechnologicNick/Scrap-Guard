@@ -18,6 +18,12 @@ ScrapGuard.connectionOutput = sm.interactable.connectionType.none
 ScrapGuard.colorNormal = sm.color.new( 0x404040ff )
 ScrapGuard.colorHighlight = sm.color.new( 0x606060ff )
 
+local idTracker = {
+    trackedTick = 0,
+    creation = {},
+    body = {}
+}
+
 function ScrapGuard.client_onInteract( self, character, state )
     if not state then return end
 
@@ -51,6 +57,10 @@ end
 function ScrapGuard.server_onInit( self )
     self.sv_bodyId = self.shape.body.id
     self.sv_creationId = self.shape.body:getCreationId()
+
+    local currentTick = sm.game.getCurrentTick()
+    idTracker.creation[self.sv_creationId] = currentTick
+    idTracker.body[self.sv_bodyId] = currentTick
     
     -- Testing
     RestrictionHandler:setRestriction("game", nil, "game_restriction", true)
@@ -63,6 +73,7 @@ function ScrapGuard.server_onFixedUpdate( self, timeStep )
     local newBodyId = self.shape.body.id
     local newCreationId = self.shape.body:getCreationId()
 
+    -- Update restriction indexes
     if self.sv_bodyId ~= newBodyId then
         print("Body id changed from", self.sv_bodyId, "to", newBodyId)
 
@@ -78,4 +89,37 @@ function ScrapGuard.server_onFixedUpdate( self, timeStep )
 
         self.sv_creationId = newCreationId
     end
+
+    -- Garbage collect indexes
+    local currentTick = sm.game.getCurrentTick()
+
+    -- Trigger once on new tick
+    if currentTick ~= idTracker.trackedTick then
+
+        for _, mode in ipairs({ "creation", "body" }) do
+            local untracked = {}
+            local foundUntracked = false
+
+            for index, _ in pairs(RestrictionHandler.restrictions[mode]) do
+                if (idTracker[mode][index] or 0) + 20 <= currentTick then
+                    table.insert(untracked, index)
+                    foundUntracked = true
+                end
+            end
+            
+            if foundUntracked then
+                RestrictionHandler:removeRestrictionIndexes( mode, untracked )
+            end
+        end
+        
+        idTracker = {
+            trackedTick = currentTick,
+            creation = {},
+            body = {}
+        }
+    end
+
+    idTracker.creation[newCreationId] = currentTick
+    idTracker.body[newBodyId] = currentTick
+
 end

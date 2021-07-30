@@ -120,3 +120,24 @@ function RestrictionHandler:updateRestrictionIndex( mode, indexFrom, indexTo )
         error("Unknown mode \"" .. tostring(mode) .. "\"")
     end
 end
+
+function RestrictionHandler:removeRestrictionIndexes( mode, indexes )
+    print("removing", mode, indexes, self.restrictions[mode][indexes[1]])
+
+    if mode == "game" then
+        error("Mode \"" .. tostring(mode) .. "\" is not indexed!")
+    elseif mode == "world" or mode == "creation" or mode == "body" then
+
+        local tbl = self.restrictions[mode]
+        for _, index in ipairs(indexes) do
+            tbl[index] = nil
+        end
+
+    else
+        error("Unknown mode \"" .. tostring(mode) .. "\"")
+    end
+end
+
+function RestrictionHandler:removeRestrictionIndex( mode, index )
+    self:removeRestrictionIndexes( mode, { index } )
+end
