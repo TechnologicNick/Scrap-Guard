@@ -7,20 +7,25 @@
                 <Property key="TextAlign" value="Center"/>
                 <Property key="FontName" value="ButtonCaptionLarge"/>
             </Widget>
-            <Widget type="Button" skin="InventoryTab" position_real="0.108333 0.666667 0.258333 0.333333" name="Tab1">
+            <Widget type="Button" skin="InventoryTab" position_real="0.03 0.666667 0.2275 0.333333" name="Tab1">
                 <Property key="TextAlign" value="Center"/>
                 <Property key="FontName" value="SM_Tab"/>
                 <Property key="Caption" value="Body"/>
             </Widget>
-            <Widget type="Button" skin="InventoryTab" position_real="0.375 0.666667 0.25 0.333333" name="Tab2">
+            <Widget type="Button" skin="InventoryTab" position_real="0.2675 0.666667 0.2275 0.333333" name="Tab2">
                 <Property key="FontName" value="SM_Tab"/>
                 <Property key="TextAlign" value="Center"/>
                 <Property key="Caption" value="Creation"/>
             </Widget>
-            <Widget type="Button" skin="InventoryTab" position_real="0.633333 0.666667 0.258333 0.333333" name="Tab3">
+            <Widget type="Button" skin="InventoryTab" position_real="0.505 0.666667 0.2275 0.333333" name="Tab3">
                 <Property key="FontName" value="SM_Tab"/>
                 <Property key="TextAlign" value="Center"/>
                 <Property key="Caption" value="World"/>
+            </Widget>
+            <Widget type="Button" skin="InventoryTab" position_real="0.7425 0.666667 0.2275 0.333333" name="Tab4">
+                <Property key="FontName" value="SM_Tab"/>
+                <Property key="TextAlign" value="Center"/>
+                <Property key="Caption" value="Game"/>
             </Widget>
         </Widget>
         <Widget type="Widget" skin="BackgroundLightRoundedLowerLeft" position_real="0 0.222222 1 0.777778" name="OptionsPanel">
