@@ -27,9 +27,14 @@ local idTracker = {
 function ScrapGuard.client_onInteract( self, character, state )
     if not state then return end
 
-    -- self.gui = sm.gui.createGuiFromLayout('$MOD_DATA/Gui/Layouts/ScrapGuard.layout')
+    if self.gui then
+        self.gui:destroy()
+        print("destroyed")
+    end
 
-    -- self.gui:open()
+    self.gui = sm.gui.createGuiFromLayout('$MOD_DATA/Gui/Layouts/ScrapGuard.layout')
+
+    self.gui:open()
 
     self.network:sendToServer("sv_onInteract")
 end
