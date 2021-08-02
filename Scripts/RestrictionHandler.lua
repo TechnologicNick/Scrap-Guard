@@ -107,6 +107,69 @@ function RestrictionHandler:getBodyRestrictions( body )
     return restrictions
 end
 
+function RestrictionHandler:getModeRestrictions( mode, subject )
+
+    if mode == "game" then
+
+        -- Global, no subject required
+        return self.restrictions.game or {}
+
+    elseif mode == "world" then
+
+        -- Get the world id
+        local worldId
+
+        if type(subject) == "number" then
+            worldId = subject
+        elseif type(subject) == "World" then
+            worldId = subject.id
+        elseif type(subject) == "Body" then
+            worldId = subject:getWorld().id
+        else
+            error("Unknown subject type \"" .. type(subject) .. "\"")
+        end
+
+        -- World restrictions are indexed by world id
+        return self.restrictions.world[worldId] or {}
+
+    elseif mode == "creation" then
+
+        -- Get the creation id
+        local creationId
+
+        if type(subject) == "number" then
+            creationId = subject
+        elseif type(subject) == "Body" then
+            creationId = subject:getCreationId()
+        else
+            error("Unknown subject type \"" .. type(subject) .. "\"")
+        end
+
+        -- Creation restrictions are indexed by creation id
+        return self.restrictions.creation[creationId] or {}
+
+    elseif mode == "body" then
+
+        -- Get the body id
+        local bodyId
+
+        if type(subject) == "number" then
+            bodyId = subject
+        elseif type(subject) == "Body" then
+            bodyId = subject.id
+        else
+            error("Unknown subject type \"" .. type(subject) .. "\"")
+        end
+
+        -- Body restrictions are indexed by body id
+        return self.restrictions.body[bodyId] or {}
+
+    else
+        error("Unknown mode \"" .. tostring(mode) .. "\"")
+    end
+
+end
+
 function RestrictionHandler:updateRestrictionIndex( mode, indexFrom, indexTo )
     if mode == "game" then
         error("Mode \"" .. tostring(mode) .. "\" is not indexed!")

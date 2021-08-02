@@ -24,23 +24,127 @@ local idTracker = {
     body = {}
 }
 
+local indexToRestriction = {
+    [1] = "scrapguard:out_of_world_protection",
+    [2] = "vanilla:destructable",
+    [3] = "vanilla:buildable",
+    [4] = "vanilla:paintable",
+    [5] = "vanilla:connectable",
+    [6] = "vanilla:erasable",
+    [7] = "vanilla:usable",
+    [8] = "vanilla:liftable"
+}
+
+local modes = {
+    [1] = "body",
+    [2] = "creation",
+    [3] = "world",
+    [4] = "game"
+}
+
 function ScrapGuard.client_onInteract( self, character, state )
     if not state then return end
 
     if self.gui then
         self.gui:destroy()
-        print("destroyed")
+        self.gui = nil
     end
 
     self.gui = sm.gui.createGuiFromLayout('$MOD_DATA/Gui/Layouts/ScrapGuard.layout')
 
-    self.gui:open()
+    for _, name in ipairs({ "On", "Unset", "Off" }) do
+        for i, restrictionName in ipairs(indexToRestriction) do
+            self.gui:setButtonCallback(name .. i, "cl_onButtonRestriction")
+        end
+    end
 
-    self.network:sendToServer("sv_onInteract")
+    self.gui:setOnCloseCallback("cl_onGuiClose")
+    
+    self.network:sendToServer("sv_requestSyncGui")
+    
+    self.gui:open()
 end
 
-function ScrapGuard.sv_onInteract( self, data, player )
-    RestrictionHandler:getBodyRestrictions( self.shape.body )
+function ScrapGuard.cl_onGuiClose( self )
+
+    -- Clean up when no longer needed
+    if self.gui then
+        self.gui:destroy()
+        self.gui = nil
+    end
+
+end
+
+function ScrapGuard.cl_onButtonRestriction( self, buttonName )
+    local index = tonumber(buttonName:sub(-1))
+    local action = buttonName:sub(0, -2)
+
+    local restrictionName = indexToRestriction[index]
+
+    local value
+    if action == "On" then
+        value = true
+    elseif action == "Unset" then
+        value = nil
+    elseif action == "Off" then
+        value = false
+    end
+
+    self.network:sendToServer("sv_setRestriction", {
+        mode = self.cl_mode,
+        restriction = restrictionName,
+        value = value
+    })
+end
+
+function ScrapGuard.sv_setRestriction( self, data, player )
+    
+    -- Make sure the client's mode is in sync with the server
+    if not data.mode or data.mode ~= self.sv_mode then
+        self:sv_syncGui( player )
+        return
+    end
+
+    self.sv_restrictions[data.restriction] = data.value
+
+    self:sv_syncGui( player )
+
+end
+
+function ScrapGuard.sv_requestSyncGui( self, data, player )
+    self:sv_syncGui( player )
+end
+
+function ScrapGuard.sv_syncGui( self, player )
+    self.network:sendToClient(player, "cl_onSyncGui", {
+        mode = self.sv_mode,
+        restrictions = self.sv_restrictions --RestrictionHandler:getModeRestrictions( self.sv_mode, self.shape.body )
+    })
+end
+
+function ScrapGuard.cl_onSyncGui( self, data )
+    self.cl_mode = data.mode
+    self.cl_restrictions = data.restrictions
+
+    self:cl_updateButtons()
+end
+
+function ScrapGuard.cl_updateButtons( self )
+
+    -- Mode buttons
+    for i, mode in ipairs(modes) do
+        self.gui:setButtonState("Tab" .. i, mode == self.cl_mode)
+    end
+
+    -- Restriction buttons
+    for i, restrictionName in ipairs(indexToRestriction) do
+        local value = self.cl_restrictions[restrictionName]
+
+        self.gui:setButtonState("On"    .. i, value == true)
+        self.gui:setButtonState("Unset" .. i, value == nil)
+        self.gui:setButtonState("Off"   .. i, value == false)
+    end
+
 end
 
 
@@ -65,6 +169,16 @@ function ScrapGuard.server_onInit( self )
 
     idTracker.creation[self.sv_creationId] = true
     idTracker.body[self.sv_bodyId] = true
+
+    local stored = self.storage:load()
+    if stored then
+        -- Part already existed
+        sm.log.error("[ScrapGuard] Loading stored data is not implemented")
+    else
+        -- New part
+        self.sv_mode = "body"
+        self.sv_restrictions = {}
+    end
     
     -- Testing
     RestrictionHandler:setRestriction("game", nil, "game_restriction", true)
