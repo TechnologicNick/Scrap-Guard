@@ -13,7 +13,7 @@ dofile("RestrictionHandler.lua")
 ScrapGuard = class( nil )
 ScrapGuard.maxChildCount = 0
 ScrapGuard.maxParentCount = -1
-ScrapGuard.connectionInput = sm.interactable.connectionType.seated
+ScrapGuard.connectionInput = sm.interactable.connectionType.logic
 ScrapGuard.connectionOutput = sm.interactable.connectionType.none
 ScrapGuard.colorNormal = sm.color.new( 0x404040ff )
 ScrapGuard.colorHighlight = sm.color.new( 0x606060ff )
@@ -23,6 +23,8 @@ local idTracker = {
     creation = {},
     body = {}
 }
+
+local restrictionsTick = 0
 
 local indexToRestriction = {
     [1] = "scrapguard:out_of_world_protection",
@@ -118,7 +120,7 @@ end
 function ScrapGuard.sv_syncGui( self, player )
     self.network:sendToClient(player, "cl_onSyncGui", {
         mode = self.sv_mode,
-        restrictions = self.sv_restrictions --RestrictionHandler:getModeRestrictions( self.sv_mode, self.shape.body )
+        restrictions = self.sv_restrictions
     })
 end
 
@@ -179,15 +181,13 @@ function ScrapGuard.server_onInit( self )
         self.sv_mode = "body"
         self.sv_restrictions = {}
     end
-    
-    -- Testing
-    RestrictionHandler:setRestriction("game", nil, "game_restriction", true)
-    RestrictionHandler:setRestriction("world", self.shape.body, "world_restriction", true)
-    RestrictionHandler:setRestriction("creation", self.shape.body, "creation_restriction", true)
-    RestrictionHandler:setRestriction("body", self.shape.body, "body_restriction", true)
+
+    RestrictionHandler:setRestrictions( self.sv_mode, self.shape.body, self.interactable, self.sv_restrictions )
 end
 
 function ScrapGuard.server_onFixedUpdate( self, timeStep )
+    local currentTick = sm.game.getCurrentTick()
+
     local newBodyId = self.shape.body.id
     local newCreationId = self.shape.body:getCreationId()
 
@@ -216,6 +216,16 @@ function ScrapGuard.server_onFixedUpdate( self, timeStep )
     idTracker.creation[newCreationId] = true
     idTracker.body[newBodyId] = true
 
+
+
+    -- Apply restrictions (at the start of a new tick)
+    if restrictionsTick ~= currentTick then
+
+        -- Body restrictions
+        print("body", RestrictionHandler:getBodyRestrictions(self.shape.body))
+
+        restrictionsTick = currentTick
+    end
 end
 
 function ScrapGuard.sv_collectGarbageIndexes( self )
