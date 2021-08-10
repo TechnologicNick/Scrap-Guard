@@ -7,7 +7,7 @@ RestrictionHandler.restrictions = {
     body = {}
 }
 
-function RestrictionHandler:setRestrictions( mode, subject, interactable, restrictions)
+function RestrictionHandler:getRestrictionSet( mode, subject )
     local restrictionSet
 
     if mode == "game" then
@@ -72,10 +72,24 @@ function RestrictionHandler:setRestrictions( mode, subject, interactable, restri
         error("Unknown mode \"" .. tostring(mode) .. "\"")
     end
 
+    return restrictionSet
+end
+
+function RestrictionHandler:setRestrictions( mode, subject, interactable, restrictions)
+    local restrictionSet = self:getRestrictionSet( mode, subject )
+
     restrictionSet[interactable.id] = {
         interactable = interactable,
         restrictions = restrictions
     }
+
+    print("restrictionSet", restrictionSet)
+end
+
+function RestrictionHandler:removeRestrictions( mode, subject, interactable )
+    local restrictionSet = self:getRestrictionSet( mode, subject )
+
+    restrictionSet[interactable.id] = nil
 
     print("restrictionSet", restrictionSet)
 end
@@ -101,10 +115,10 @@ end
 
 function RestrictionHandler:getBodyRestrictions( body )
     local hierarchy = {
-        self.restrictions.game,
-        self.restrictions.world[body:getWorld().id],
-        self.restrictions.creation[body:getCreationId()],
         self.restrictions.body[body.id],
+        self.restrictions.creation[body:getCreationId()],
+        self.restrictions.world[body:getWorld().id],
+        self.restrictions.game,
     }
 
     local restrictions = {}

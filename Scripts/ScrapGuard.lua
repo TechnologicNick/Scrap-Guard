@@ -54,10 +54,16 @@ function ScrapGuard.client_onInteract( self, character, state )
 
     self.gui = sm.gui.createGuiFromLayout('$MOD_DATA/Gui/Layouts/ScrapGuard.layout')
 
+    -- Restriction buttons
     for _, name in ipairs({ "On", "Unset", "Off" }) do
         for i, restrictionName in ipairs(indexToRestriction) do
             self.gui:setButtonCallback(name .. i, "cl_onButtonRestriction")
         end
+    end
+
+    -- Mode buttons
+    for i, modeName in ipairs(modes) do
+        self.gui:setButtonCallback("Tab" .. i, "cl_onButtonMode")
     end
 
     self.gui:setOnCloseCallback("cl_onGuiClose")
@@ -97,6 +103,23 @@ function ScrapGuard.cl_onButtonRestriction( self, buttonName )
         restriction = restrictionName,
         value = value
     })
+end
+
+function ScrapGuard.cl_onButtonMode( self, buttonName )
+    local index = tonumber(buttonName:sub(-1))
+    local mode = modes[index]
+
+    self.network:sendToServer("sv_setMode", mode)
+end
+
+function ScrapGuard.sv_setMode( self, mode, player )
+    
+    RestrictionHandler:removeRestrictions( self.sv_mode, self.shape.body, self.interactable )
+    RestrictionHandler:setRestrictions( mode, self.shape.body, self.interactable, self.sv_restrictions )
+    
+    self.sv_mode = mode
+
+    self:sv_syncGui( player )
 end
 
 function ScrapGuard.sv_setRestriction( self, data, player )
@@ -145,6 +168,11 @@ function ScrapGuard.cl_updateButtons( self )
         self.gui:setButtonState("On"    .. i, value == true)
         self.gui:setButtonState("Unset" .. i, value == nil)
         self.gui:setButtonState("Off"   .. i, value == false)
+    end
+
+    -- Mode buttons
+    for i, modeName in ipairs(modes) do
+        self.gui:setButtonState("Tab" .. i, self.cl_mode == modeName)
     end
 
 end
