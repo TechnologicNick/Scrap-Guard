@@ -285,3 +285,9 @@ function ScrapGuard.sv_collectGarbageIndexes( self )
         }
     end
 end
+
+function ScrapGuard.server_onDestroy( self )
+
+    RestrictionHandler:removeRestrictions( self.sv_mode, self.sv_bodyId, self.interactable )
+
+end
