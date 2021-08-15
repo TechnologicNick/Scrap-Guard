@@ -287,8 +287,21 @@ function ScrapGuard.server_onFixedUpdate( self, timeStep )
     -- Apply restrictions (at the start of a new tick)
     if restrictionsTick ~= currentTick then
 
-        -- Body restrictions
-        print("body", RestrictionHandler:getBodyRestrictions(self.shape.body))
+        -- TODO: Optimise applying the restrictions
+        --[[
+            This feels very inefficient, but I can't measure any impact
+            on the performance. Looping over all bodies only if there are any
+            game or world restrictions would be better, but this'll do for now.
+        ]]
+        for _, body in ipairs(sm.body.getAllBodies()) do
+            local restrictions = RestrictionHandler:getBodyRestrictions(body)
+
+            for restriction, restricted in pairs(restrictions) do
+                if restriction:sub(1, 8) == "vanilla:" then
+                    body[restriction:sub(9)] = restricted
+                end
+            end
+        end
 
         restrictionsTick = currentTick
     end
