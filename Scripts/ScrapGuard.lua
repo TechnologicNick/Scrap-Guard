@@ -120,6 +120,9 @@ function ScrapGuard.sv_setMode( self, mode, player )
     self.sv_mode = mode
 
     self:sv_syncGui( player )
+
+    self:sv_saveState()
+
 end
 
 function ScrapGuard.sv_setRestriction( self, data, player )
@@ -134,6 +137,16 @@ function ScrapGuard.sv_setRestriction( self, data, player )
 
     self:sv_syncGui( player )
 
+    self:sv_saveState()
+
+end
+
+function ScrapGuard.sv_saveState( self )
+    self.storage:save({
+        version = 2,
+        mode = self.sv_mode,
+        restrictions = self.sv_restrictions
+    })
 end
 
 function ScrapGuard.sv_requestSyncGui( self, data, player )
@@ -200,10 +213,35 @@ function ScrapGuard.server_onInit( self )
     idTracker.creation[self.sv_creationId] = true
     idTracker.body[self.sv_bodyId] = true
 
+    -- Storage
     local stored = self.storage:load()
     if stored then
         -- Part already existed
-        sm.log.error("[ScrapGuard] Loading stored data is not implemented")
+        if not stored.version or stored.version < 2 then
+            -- Migrate from Scrap Guard v1
+            self.sv_mode = stored.mode
+            self.sv_restrictions = {}
+
+            local lookupRestrictions = {
+                protection_OutOfWorld = "scrapguard:out_of_world_protection",
+                property_Destructable = "vanilla:destructable",
+                property_Buildable = "vanilla:buildable",
+                property_Paintable = "vanilla:paintable",
+                property_Connectable = "vanilla:connectable",
+                property_Erasable = "vanilla:erasable",
+                property_Usable = "vanilla:usable",
+                property_Liftable = "vanilla:liftable"
+            }
+
+            for key, value in pairs(stored.itemData) do
+                local migratedValue = value.selectedOption == "#{MENU_OPTION_ON}" and true or false
+
+                self.sv_restrictions[lookupRestrictions[key]] = migratedValue
+            end
+        elseif stored.version == 2 then
+            self.sv_mode = stored.mode
+            self.sv_restrictions = stored.restrictions
+        end
     else
         -- New part
         self.sv_mode = "body"
