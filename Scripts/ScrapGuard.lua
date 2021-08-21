@@ -9,6 +9,9 @@ end
 
 
 dofile("RestrictionHandler.lua")
+dofile("LiftUtils.lua")
+
+LiftUtils:installHooks()
 
 ScrapGuard = class( nil )
 ScrapGuard.maxChildCount = 0
@@ -287,6 +290,9 @@ function ScrapGuard.server_onFixedUpdate( self, timeStep )
     -- Apply restrictions (at the start of a new tick)
     if restrictionsTick ~= currentTick then
 
+        local creationsOutsideBounds = {}
+        local isAnyCreationOutsideBounds = false
+
         -- TODO: Optimise applying the restrictions
         --[[
             This feels very inefficient, but I can't measure any impact
@@ -301,7 +307,51 @@ function ScrapGuard.server_onFixedUpdate( self, timeStep )
                     body[restriction:sub(9)] = restricted
                 end
             end
+
+            if body.worldPosition:length2() > 900 then
+                if not body:isStatic() then
+                -- if #body:getCreationBodies() >= 3 or #body:getShapes() >= 10 then 
+                    creationsOutsideBounds[body:getCreationId()] = body
+                    isAnyCreationOutsideBounds = true
+                end
+            end
+            
+            -- print(body.worldPosition:length2())
         end
+
+        if isAnyCreationOutsideBounds then
+            local lifts = LiftUtils:findLifts()
+            local players = sm.player.getAllPlayers()
+    
+            local currentCreationId = nil
+    
+            for _, player in pairs(players) do
+                local lift = lifts[player.id]
+    
+                if not lift or not lift:hasBodies() then
+                    local hit, raycastResult = sm.physics.raycast(sm.vec3.new(0, 0, 1000), sm.vec3.new(0, 0, -10))
+                    local pos = hit and raycastResult.pointWorld * sm.construction.constants.subdivisions or sm.vec3.new(0, 0, 0)
+    
+                    local creationId, body = next(creationsOutsideBounds, currentCreationId)
+                    currentCreationId = creationId
+
+                    local bodies = body:getCreationBodies()
+
+                    local okPosition, liftLevel = sm.tool.checkLiftCollision( bodies, pos, 0 )
+                    while not okPosition do
+                        pos = pos + sm.vec3.new(0, 0, 1)
+                        okPosition, liftLevel = sm.tool.checkLiftCollision( bodies, pos, 0 )
+                    end
+                    sm.player.placeLift(player, bodies, pos, liftLevel, 0)
+                end
+            end
+        end
+
+        local sum = 0
+        for _, _ in pairs(creationsOutsideBounds) do
+            sum = sum + 1
+        end
+        print(sum)
 
         restrictionsTick = currentTick
     end
