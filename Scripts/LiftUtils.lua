@@ -1,16 +1,22 @@
 LiftUtils = class()
 LiftUtils.lifts = {}
-LiftUtils.liftPositions = {}
+LiftUtils.liftCaptures = {}
 LiftUtils.tickFound = 0
 
 function LiftUtils:installHooks()
 
     o_sm_player_placeLift = o_sm_player_placeLift or sm.player.placeLift
 
-    function sm.player.placeLift( player, body, position, level, rotation )
-        o_sm_player_placeLift( player, body, position, level, rotation )
+    function sm.player.placeLift( player, creation, position, level, rotation )
+        o_sm_player_placeLift( player, creation, position, level, rotation )
         
-        self.liftPositions[player.id] = position * sm.construction.constants.subdivideRatio
+        self.liftCaptures[player.id] = {
+            player = player,
+            creation = creation,
+            position = position,
+            level = level,
+            rotation = rotation
+        }
 
     end
 
@@ -22,13 +28,19 @@ function LiftUtils:findLifts()
     if self.tickFound ~= currentTick then
         self.lifts = {}
 
-        for playerId, position in pairs(self.liftPositions) do
-            local hit, raycastResult = sm.physics.raycast(position + sm.vec3.new(0, 0, 0), position + sm.vec3.new(0, 0, 1))
-
-            if hit and raycastResult.type == "lift" then
-                local lift, topShape = raycastResult:getLiftData()
-
-                self.lifts[playerId] = lift
+        for playerId, liftCapture in pairs(self.liftCaptures) do
+            if sm.exists(liftCapture.player) then
+                local position = liftCapture.position * sm.construction.constants.subdivideRatio
+                local hit, raycastResult = sm.physics.raycast(position + sm.vec3.new(0, 0, 0), position + sm.vec3.new(0, 0, 1))
+    
+                if hit and raycastResult.type == "lift" then
+                    local lift, topShape = raycastResult:getLiftData()
+    
+                    self.lifts[playerId] = lift
+                end
+            else
+                self.liftCaptures[playerId] = nil
+                self.lifts[playerId] = nil
             end
         end
     end

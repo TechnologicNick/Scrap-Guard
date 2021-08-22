@@ -320,41 +320,52 @@ function ScrapGuard.server_onFixedUpdate( self, timeStep )
         end
 
         if isAnyCreationOutsideBounds then
-            local lifts = LiftUtils:findLifts()
-            local players = sm.player.getAllPlayers()
-    
-            local currentCreationId = nil
-    
-            for _, player in pairs(players) do
-                local lift = lifts[player.id]
-    
-                if not lift or not lift:hasBodies() then
-                    local hit, raycastResult = sm.physics.raycast(sm.vec3.new(0, 0, 1000), sm.vec3.new(0, 0, -10))
-                    local pos = hit and raycastResult.pointWorld * sm.construction.constants.subdivisions or sm.vec3.new(0, 0, 0)
-    
-                    local creationId, body = next(creationsOutsideBounds, currentCreationId)
-                    currentCreationId = creationId
-
-                    local bodies = body:getCreationBodies()
-
-                    local okPosition, liftLevel = sm.tool.checkLiftCollision( bodies, pos, 0 )
-                    while not okPosition do
-                        pos = pos + sm.vec3.new(0, 0, 1)
-                        okPosition, liftLevel = sm.tool.checkLiftCollision( bodies, pos, 0 )
-                    end
-                    sm.player.placeLift(player, bodies, pos, liftLevel, 0)
-                end
+            local creationId, body = next(creationsOutsideBounds)
+            if body then
+                self:sv_saveCreation(body)
             end
         end
 
-        local sum = 0
-        for _, _ in pairs(creationsOutsideBounds) do
-            sum = sum + 1
-        end
-        print(sum)
-
         restrictionsTick = currentTick
     end
+end
+
+function ScrapGuard.sv_saveCreation( self, body )
+
+    -- Find a position to place the creation on a lift
+    local hit, raycastResult = sm.physics.raycast(sm.vec3.new(0, 0, 1000), sm.vec3.new(0, 0, -10))
+    local pos = hit and raycastResult.pointWorld * sm.construction.constants.subdivisions or sm.vec3.new(0, 0, 0)
+
+    local bodies = body:getCreationBodies()
+
+    local okPosition, liftLevel = sm.tool.checkLiftCollision( bodies, pos, 0 )
+    while not okPosition do
+        pos = pos + sm.vec3.new(0, 0, 1)
+        okPosition, liftLevel = sm.tool.checkLiftCollision( bodies, pos, 0 )
+    end
+
+
+    -- Backup the placement of the current lift
+    local playerId, lift = next(LiftUtils:findLifts())
+    local liftCapture = LiftUtils.liftCaptures[playerId]
+
+    local player = liftCapture and liftCapture.player or sm.player.getAllPlayers()[1]
+
+    -- Put the out of bounds creation on the lift
+    o_sm_player_placeLift(player, bodies, pos, liftLevel, 0)
+
+    -- Put the original creation back
+    if liftCapture then
+        print(liftCapture)
+        o_sm_player_placeLift(
+            liftCapture.player,
+            lift:hasBodies() and liftCapture.creation or {},
+            liftCapture.position,
+            lift:getLevel(),
+            liftCapture.rotation
+        )
+    end
+
 end
 
 function ScrapGuard.sv_collectGarbageIndexes( self )
