@@ -210,6 +210,8 @@ function ScrapGuard.server_onRefresh( self )
 end
 
 function ScrapGuard.server_onInit( self )
+    self.sv_executeNextTick = {}
+
     self.sv_bodyId = self.shape.body.id
     self.sv_creationId = self.shape.body:getCreationId()
 
@@ -256,6 +258,12 @@ end
 
 function ScrapGuard.server_onFixedUpdate( self, timeStep )
     local currentTick = sm.game.getCurrentTick()
+
+    -- Execute functions scheduled in the previous tick
+    for _, executeData in ipairs(self.sv_executeNextTick) do
+        executeData.func()
+    end
+    self.sv_executeNextTick = {}
 
     local newBodyId = self.shape.body.id
     local newCreationId = self.shape.body:getCreationId()
@@ -355,15 +363,42 @@ function ScrapGuard.sv_saveCreation( self, body )
     o_sm_player_placeLift(player, bodies, pos, liftLevel, 0)
 
     -- Put the original creation back
-    if liftCapture then
-        print(liftCapture)
-        o_sm_player_placeLift(
-            liftCapture.player,
-            lift:hasBodies() and liftCapture.creation or {},
-            liftCapture.position,
-            lift:getLevel(),
-            liftCapture.rotation
-        )
+    if liftCapture and sm.exists(lift) then
+        
+        --[[
+            Put the creation on the lift for a second time in the same tick.
+            This lift will be removed next tick to return the lift we lend,
+            while leaving the first lift with our rescued creation in place.
+        ]]
+        o_sm_player_placeLift(player, bodies, pos, liftLevel, 0)
+        
+        local liftedBodies = liftCapture.creation
+
+        local lift_hasBodies = lift:hasBodies()
+        local lift_getWorldPosition = lift:getWorldPosition()
+        local lift_getLevel = lift:getLevel()
+
+        local replaceLift = function()
+            if lift_hasBodies then
+                local head = lift_getWorldPosition + sm.vec3.new(0, 0, (lift_getLevel + 2) * sm.construction.constants.subdivideRatio)
+                local hit, raycastResult = sm.physics.raycast(head + sm.vec3.new(0, 0, 1), head)
+                if hit and raycastResult.type == "body" then
+                    liftedBodies = raycastResult:getBody():getCreationBodies()
+                end
+            end
+
+            o_sm_player_placeLift(
+                liftCapture.player,
+                liftedBodies,
+                liftCapture.position,
+                lift_getLevel,
+                liftCapture.rotation
+            )
+        end
+
+        table.insert(self.sv_executeNextTick, {
+            func = replaceLift
+        })
     end
 
 end
