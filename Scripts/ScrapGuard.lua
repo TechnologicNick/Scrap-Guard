@@ -335,6 +335,27 @@ function ScrapGuard.server_onFixedUpdate( self, timeStep )
             end
         end
 
+        -- Respawn players out of bounds too
+        for _, player in ipairs(sm.player.getAllPlayers()) do
+            if player.character and not player.character:getLockingInteractable() then
+
+                local pos = player.character.worldPosition
+                if sm.vec3.new(pos.x, pos.y, 0):length2() > 4000000 or math.abs(pos.z) > 100000 then
+
+                    local char = sm.character.createCharacter(
+                        player,
+                        player.character:getWorld(),
+                        sm.vec3.new(16, 16, -100), -- Default creative mode spawn, inside the teleportation border
+                        0,
+                        0,
+                        player.character
+                    )
+                    player:setCharacter(char)
+
+                end
+            end
+        end
+
         restrictionsTick = currentTick
     end
 end
