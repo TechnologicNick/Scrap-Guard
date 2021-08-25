@@ -27,6 +27,8 @@ local idTracker = {
     body = {}
 }
 
+local triggerTracker = {}
+
 local restrictionsTick = 0
 
 local indexToRestriction = {
@@ -372,35 +374,108 @@ function ScrapGuard.sv_saveCreation( self, body )
         ]]
         o_sm_player_placeLift(player, bodies, pos, liftLevel, 0)
         
-        local liftedBodies = liftCapture.creation
+        local liftedBodies = {}
 
         local lift_hasBodies = lift:hasBodies()
         local lift_getWorldPosition = lift:getWorldPosition()
         local lift_getLevel = lift:getLevel()
+        
+        local head = lift_getWorldPosition + sm.vec3.new(0, 0, (lift_getLevel + 2) * sm.construction.constants.subdivideRatio)
 
-        local replaceLift = function()
-            if lift_hasBodies then
-                local head = lift_getWorldPosition + sm.vec3.new(0, 0, (lift_getLevel + 2) * sm.construction.constants.subdivideRatio)
-                local hit, raycastResult = sm.physics.raycast(head + sm.vec3.new(0, 0, 1), head)
-                if hit and raycastResult.type == "body" then
-                    liftedBodies = raycastResult:getBody():getCreationBodies()
-                end
-            end
-
+        local replaceLift = function(creation)
             o_sm_player_placeLift(
                 liftCapture.player,
-                liftedBodies,
+                creation or {},
                 liftCapture.position,
                 lift_getLevel,
                 liftCapture.rotation
             )
         end
 
-        table.insert(self.sv_executeNextTick, {
-            func = replaceLift
-        })
+        if lift_hasBodies then
+            local size = sm.vec3.new(4, 4, 1) * sm.construction.constants.subdivideRatio
+
+            local trigger = sm.areaTrigger.createBox(
+                size,
+                head - size / 2,
+                sm.quat.identity(),
+                sm.areaTrigger.filter.dynamicBody
+            )
+
+            triggerTracker[trigger.id] = {
+                expiresAt = sm.game.getCurrentTick() + 10,
+                replaceLift = replaceLift
+            }
+
+            trigger:bindOnEnter("sv_onEnterLiftTrigger")
+        else
+            table.insert(self.sv_executeNextTick, {
+                func = replaceLift
+            })
+        end
+    end
+    
+end
+
+function ScrapGuard.sv_onEnterLiftTrigger( self, trigger, enteredBodies )
+
+    local tracker = triggerTracker[trigger.id]
+    if tracker and sm.game.getCurrentTick() < tracker.expiresAt then
+        
+        -- There might be multiple creations in the areaTrigger
+        
+        -- Get a single body of each creation
+        local creationsIds = {}
+        for _, enteredBody in ipairs(enteredBodies) do
+            creationsIds[enteredBody:getCreationId()] = enteredBody
+        end
+        
+        -- Get all liftable creations
+        local liftableCreations = {}
+        for creationId, body in pairs(creationsIds) do
+            local creation = body:getCreationBodies()
+
+            if LiftUtils:isCreationLiftable(creation) then
+                table.insert(liftableCreations, creation)
+            end
+        end
+
+        -- Select the creation we want to put on the lift
+        local creation = nil
+        if #liftableCreations == 1 then
+
+            -- Only a single creation, no need to compare
+            creation = liftableCreations[1]
+
+        elseif #liftableCreations >= 2 then
+
+            -- Select the biggest creation (most childshapes)
+            local shapeCountMax = 0
+
+            for i, liftableCreation in ipairs(liftableCreations) do
+                local shapeCount = 0
+
+                for _, body in ipairs(liftableCreation) do
+                    shapeCount = shapeCount + #body:getShapes()
+                end
+
+                if shapeCount > shapeCountMax then
+                    shapeCountMax = shapeCount
+                    creation = liftableCreation
+                end
+            end
+
+        end
+
+        if creation then
+            tracker.replaceLift(creation)
+        end
+
     end
 
+    triggerTracker[trigger.id] = nil
+    
+    sm.areaTrigger.destroy(trigger)
 end
 
 function ScrapGuard.sv_collectGarbageIndexes( self )

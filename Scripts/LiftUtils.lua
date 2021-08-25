@@ -49,3 +49,29 @@ function LiftUtils:findLifts()
 
     return self.lifts
 end
+
+function LiftUtils:isBodyLiftable( body )
+    if not sm.exists(body) or body:isStatic() or not body.liftable then
+        return false
+    end
+
+    for _, shape in ipairs(body:getShapes()) do
+        if not shape.liftable then
+            return false
+        end
+    end
+
+    return true
+end
+
+function LiftUtils:isCreationLiftable( creation )
+    local bodies = type(creation) == "table" and creation or creation:getCreationBodies()
+
+    for _, body in ipairs(bodies) do
+        if not self:isBodyLiftable(body) then
+            return false
+        end
+    end
+
+    return true
+end
