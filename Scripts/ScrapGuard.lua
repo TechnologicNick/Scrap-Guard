@@ -320,7 +320,7 @@ function ScrapGuard.server_onFixedUpdate( self, timeStep )
 
             if restrictions["scrapguard:out_of_world_protection"]
                 and not body:isStatic()
-                and body.worldPosition:length2() > 900
+                and body.worldPosition:length2() > 4000000
             then
                 creationsOutsideBounds[body:getCreationId()] = body
                 isAnyCreationOutsideBounds = true
