@@ -447,7 +447,9 @@ function ScrapGuard.sv_onEnterLiftTrigger( self, trigger, enteredBodies )
         -- Get a single body of each creation
         local creationsIds = {}
         for _, enteredBody in ipairs(enteredBodies) do
-            creationsIds[enteredBody:getCreationId()] = enteredBody
+            if sm.exists(enteredBody) then
+                creationsIds[enteredBody:getCreationId()] = enteredBody
+            end
         end
         
         -- Get all liftable creations
