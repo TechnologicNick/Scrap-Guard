@@ -318,15 +318,14 @@ function ScrapGuard.server_onFixedUpdate( self, timeStep )
                 end
             end
 
-            if body.worldPosition:length2() > 900 then
-                if not body:isStatic() then
-                -- if #body:getCreationBodies() >= 3 or #body:getShapes() >= 10 then 
-                    creationsOutsideBounds[body:getCreationId()] = body
-                    isAnyCreationOutsideBounds = true
-                end
+            if restrictions["scrapguard:out_of_world_protection"]
+                and not body:isStatic()
+                and body.worldPosition:length2() > 900
+            then
+                creationsOutsideBounds[body:getCreationId()] = body
+                isAnyCreationOutsideBounds = true
             end
             
-            -- print(body.worldPosition:length2())
         end
 
         if isAnyCreationOutsideBounds then
@@ -474,7 +473,7 @@ function ScrapGuard.sv_onEnterLiftTrigger( self, trigger, enteredBodies )
     end
 
     triggerTracker[trigger.id] = nil
-    
+
     sm.areaTrigger.destroy(trigger)
 end
 
