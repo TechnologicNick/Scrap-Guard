@@ -272,7 +272,7 @@ function ScrapGuard.server_onFixedUpdate( self, timeStep )
 
     -- Update restriction indexes
     if self.sv_bodyId ~= newBodyId then
-        print("Body id changed from", self.sv_bodyId, "to", newBodyId)
+        -- print("Body id changed from", self.sv_bodyId, "to", newBodyId)
 
         RestrictionHandler:updateRestrictionIndex( "body", self.sv_bodyId, newBodyId )
         
@@ -280,7 +280,7 @@ function ScrapGuard.server_onFixedUpdate( self, timeStep )
     end
 
     if self.sv_creationId ~= newCreationId then
-        print("Creation id changed from", self.sv_creationId, "to", newCreationId)
+        -- print("Creation id changed from", self.sv_creationId, "to", newCreationId)
 
         RestrictionHandler:updateRestrictionIndex( "creation", self.sv_creationId, newCreationId )
 

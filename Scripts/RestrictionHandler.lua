@@ -83,7 +83,7 @@ function RestrictionHandler:setRestrictions( mode, subject, interactable, restri
         restrictions = restrictions
     }
 
-    print("restrictionSet", restrictionSet)
+    -- print("restrictionSet after setRestrictions", restrictionSet)
 end
 
 function RestrictionHandler:removeRestrictions( mode, subject, interactable )
@@ -91,7 +91,7 @@ function RestrictionHandler:removeRestrictions( mode, subject, interactable )
 
     restrictionSet[interactable.id] = nil
 
-    print("restrictionSet", restrictionSet)
+    -- print("restrictionSet after removeRestrictions", restrictionSet)
 end
 
 function RestrictionHandler:shouldUseRestrictions( interactable )
@@ -162,7 +162,7 @@ function RestrictionHandler:updateRestrictionIndex( mode, indexFrom, indexTo )
 end
 
 function RestrictionHandler:removeRestrictionIndexes( mode, indexes )
-    print("removing", mode, indexes, self.restrictions[mode][indexes[1]])
+    -- print("removing", mode, indexes, self.restrictions[mode][indexes[1]])
 
     if mode == "game" then
         error("Mode \"" .. tostring(mode) .. "\" is not indexed!")
