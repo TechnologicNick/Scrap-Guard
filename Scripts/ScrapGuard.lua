@@ -369,9 +369,21 @@ function ScrapGuard.sv_saveCreation( self, body )
     local bodies = body:getCreationBodies()
 
     local okPosition, liftLevel = sm.tool.checkLiftCollision( bodies, pos, 0 )
-    while not okPosition do
-        pos = pos + sm.vec3.new(0, 0, 1)
-        okPosition, liftLevel = sm.tool.checkLiftCollision( bodies, pos, 0 )
+    if not okPosition then
+
+        --[[
+            Max 20 iterations to prevent infinite loop. If no suitable position is found
+            within the iteration cap, the creation will forcefully be put on the lift
+        ]]
+        for i = 1, 20 do
+
+            pos = pos + sm.vec3.new(0, 0, 1)
+            okPosition, liftLevel = sm.tool.checkLiftCollision( bodies, pos, 0 )
+
+            if okPosition then
+                break
+            end
+        end
     end
 
 
