@@ -20,7 +20,7 @@ jobs:
       - name: Copy to /dist
         run: |
           mkdir "./dist"
-          find . -maxdepth 1 -type d -not -path "./dist" -not -path "." -not -path "./.*" -exec mv --target-directory "./dist" {} +
+          find . -maxdepth 1 -not -path "./dist" -not -path "." -not -path "./.*" -exec mv --target-directory "./dist" {} +
 
       - name: Add files to Github release
         run: |
