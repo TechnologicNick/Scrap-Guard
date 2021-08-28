@@ -100,4 +100,4 @@ jobs:
           STEAM_PASSWORD: ${{ secrets.STEAM_PASSWORD }}
           STEAM_2FA: ${{ fromJSON(steps.prompt.outputs.code_2fa).options.code }}
         run: |
-          steamcmd +login $STEAM_USERNAME $STEAM_PASSWORD $STEAM_2FA +quit
+          steamcmd +login $STEAM_USERNAME $STEAM_PASSWORD $STEAM_2FA +workshop_build_item workshop.vdf +quit
