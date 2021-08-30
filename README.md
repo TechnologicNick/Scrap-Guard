@@ -6,7 +6,7 @@
 
 <h3 align="center">
   <a href="https://github.com/TechnologicNick/Scrap-Guard/releases/latest">
-    <img src="https://img.shields.io/github/v/release/TechnologicNick/Scrap-Guard?include_prereleases&label=latest%20release&logo=github&style=for-the-badge">
+    <img src="https://img.shields.io/github/v/release/TechnologicNick/Scrap-Guard?label=latest%20release&style=for-the-badge">
     <img src="https://img.shields.io/github/release-date-pre/TechnologicNick/Scrap-Guard?label=from&style=for-the-badge">
     <img src="https://img.shields.io/badge/game%20version-0.5.1-success?style=for-the-badge">
   </a>
