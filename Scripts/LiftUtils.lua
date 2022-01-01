@@ -8,6 +8,12 @@ function LiftUtils:installHooks()
     o_sm_player_placeLift = o_sm_player_placeLift or sm.player.placeLift
 
     function sm.player.placeLift( player, creation, position, level, rotation )
+        --Patch to modiying lift.lua file to allow non liftable creations to be lifted.
+        if not LiftUtils:isCreationLiftable(creation) then
+            sm.gui.chatMessage( player.name .. " tried to lift a nonliftable creation (out of sync?)")
+            return --Dont allow lift to be placed
+        end
+
         o_sm_player_placeLift( player, creation, position, level, rotation )
         
         self.liftCaptures[player.id] = {
