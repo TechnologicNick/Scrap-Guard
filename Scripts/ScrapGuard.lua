@@ -340,7 +340,7 @@ function ScrapGuard.server_onFixedUpdate( self, timeStep )
             if player.character and not player.character:getLockingInteractable() then
 
                 local pos = player.character.worldPosition
-                if (pos.x * pos.x + pos.y * pos.y) > 4000000 or pos.z < -200 or pos.z > 100000 then
+                if (pos.x * pos.x + pos.y * pos.y) > 4000000 or pos.z < -2000 or pos.z > 100000 then
 
                     local char = sm.character.createCharacter(
                         player,
